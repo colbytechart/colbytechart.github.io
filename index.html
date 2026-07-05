@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sean Colby | VFX Artist — Portfolio</title>
+
+<!-- Optional web font for the rounded geometric look in the reference. Falls back cleanly to system fonts if offline. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #000000;
+    --accent: #16BAFF;
+    --accent-dim: #16BAFFb3; /* dimmed nav items */
+    --panel: #26282d;
+    --panel-border: #3a3d44;
+    --content-width: 1100px;
+    --gap: 24px;
+    --title-gap: 24px;   /* space between a section's title and its own content */
+    --section-gap: 48px; /* space between one section's content and the next section's title (double --title-gap) */
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--accent);
+    font-family: 'Poppins', 'Segoe UI', -apple-system, sans-serif;
+    width: 100%;
+    min-height: 100%;
+    scrollbar-gutter: stable; /* reserves scrollbar space so layout never shifts, without forcing a visible track */
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* body always at least fills the viewport, so footer never sits above the bottom edge on short pages */
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* ============ TOP SECTION: NAV (shared across all pages) ============ */
+
+  header.top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 32px 56px;
+    max-width: 1800px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .brand {
+    font-size: 25px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  nav.main-links {
+    display: flex;
+    gap: 40px;
+  }
+
+  nav.main-links a {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--accent-dim);
+    letter-spacing: 0.2px;
+    transition: color 0.15s ease, transform 0.15s ease;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  nav.main-links a.active {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  nav.main-links a:hover {
+    color: var(--accent);
+    transform: translateY(-3px);
+  }
+
+  .social-icons {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .social-icons a:hover {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+
+  .social-icons svg {
+    display: block;
+  }
+
+  .imdb-badge {
+    border: 1.9px solid var(--accent);
+    border-radius: 4px;
+    padding: 4px 9px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 1;
+  }
+
+  /* ============ PAGE SWITCHING ============ */
+  /* Only the .page with .active is shown. Switching pages just toggles this
+     class via JS below -- no network request, no reload. */
+
+  .page {
+    display: none;
+  }
+
+  .page.active {
+    display: block;
+    flex: 1 0 auto; /* fills remaining vertical space so short pages still push the footer to the bottom */
+  }
+
+  /* Every page's last section gets the same breathing room before the footer,
+     regardless of whether it ends in a video, a grid, or a description.
+     (The contact page manages its own vertical centering separately.) */
+  .page > section.reel:last-child,
+  .page > section.work:last-child {
+    margin-bottom: var(--section-gap);
+  }
+
+  /* ============ REEL SECTION (title + video) ============ */
+
+  section.reel {
+    max-width: var(--content-width);
+    margin: var(--section-gap) auto 0;
+    padding: 0 24px;
+    text-align: center;
+  }
+
+  .reel h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: var(--title-gap);
+    letter-spacing: 0.2px;
+  }
+
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+
+  /* Used on pages that don't have a real Vimeo embed yet */
+  .video-wrapper.placeholder {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .video-wrapper.placeholder .placeholder-label {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: center;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+    padding: 0 20px;
+  }
+
+  /* ============ WORK GRID SECTION ============ */
+
+  section.work {
+    max-width: var(--content-width);
+    margin: var(--section-gap) auto 0;
+    padding: 0 24px;
+    text-align: center;
+  }
+
+  .work h2 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: var(--title-gap);
+    letter-spacing: 0.2px;
+  }
+
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap);
+  }
+
+  .work-grid .thumb {
+    aspect-ratio: 2 / 1;
+    background: var(--panel);
+    /*border: 1px solid var(--panel-border);*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .work-grid .thumb svg {
+    width: 42px;
+    height: 42px;
+    color: var(--accent);
+  }
+
+  /*
+    HOW TO SWAP IN REAL IMAGES:
+    Replace a .thumb div's contents, e.g.:
+    <div class="thumb"><img src="your-image.jpg" alt="Project name" style="width:100%; height:100%; object-fit:cover;"></div>
+  */
+
+  /* ============ INTERACTIVE (SELECTABLE) IMAGE GRID ============ */
+  /* Same grid layout as .work-grid, but square thumbnails, a hover
+     highlight, and click-to-open-lightbox behavior. Used for grouped
+     project galleries like "Past Archviz Work". */
+
+  .interactive-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap);
+  }
+
+  .thumb-interactive {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: var(--panel);
+    /*border: 1px solid var(--panel-border);*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .thumb-interactive svg {
+    width: 42px;
+    height: 42px;
+    color: var(--accent);
+  }
+
+  /* The 25%-opacity accent-color hover highlight, fading in/out */
+  .thumb-interactive::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  .thumb-interactive:hover::after {
+    opacity: 0.25;
+  }
+
+  /*
+    HOW TO SWAP IN REAL IMAGES:
+    Replace a .thumb-interactive div's contents with a square-cropped thumbnail, e.g.:
+    <div class="thumb-interactive" data-group="archviz" data-index="0" data-full-src="full-image.jpg">
+      <img src="thumb-image.jpg" alt="" style="width:100%; height:100%; object-fit:cover;">
+    </div>
+    object-fit:cover on a 1:1 box automatically crops a landscape image to a
+    centered square using its full height, matching the requested crop style.
+    data-full-src should point to the full-resolution image for the lightbox.
+  */
+
+  /* ============ SECTION DESCRIPTION TEXT ============ */
+
+  .section-description {
+    max-width: var(--content-width);
+    margin: 20px auto 0;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--accent);
+    text-align: left;
+  }
+
+  /* ============ LIGHTBOX (fullscreen image viewer) ============ */
+
+  .lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.96);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 90px 100px;
+    z-index: 1000;
+  }
+
+  .lightbox-overlay.open {
+    display: flex;
+  }
+
+  .lightbox-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 1100px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .lightbox-content img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .lightbox-placeholder-label {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: center;
+    line-height: 1.4;
+    padding: 0 20px;
+  }
+
+  .lightbox-close,
+  .lightbox-arrow {
+    position: fixed;
+    background: none;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+    padding: 0;
+  }
+
+  .lightbox-close:hover,
+  .lightbox-arrow:hover {
+    opacity: 0.75;
+  }
+
+  .lightbox-close {
+    top: 28px;
+    right: 40px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .lightbox-close svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .lightbox-arrow {
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+  }
+
+  .lightbox-arrow svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .lightbox-prev {
+    left: 32px;
+  }
+
+  .lightbox-next {
+    right: 32px;
+  }
+
+  .lightbox-arrow[hidden] {
+    display: none;
+  }
+
+  /* ============ CONTACT SECTION ============ */
+
+  section.contact-section {
+    max-width: 560px;
+    margin: 140px auto;
+    padding: 0 24px;
+    text-align: center;
+  }
+
+  .contact-section h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: var(--title-gap);
+    letter-spacing: 0.2px;
+  }
+
+  .contact-section p {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+
+  .contact-email {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+    /*border-bottom: 1px solid var(--accent-dim);*/
+    padding-bottom: 3px;
+    transition: border-color 0.15s ease;
+  }
+
+  .contact-email:hover {
+    border-color: var(--accent);
+  }
+
+  /* ============ FOOTER (shared across all pages) ============ */
+
+  footer.site-footer {
+    text-align: center;
+    padding: 0 24px 48px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.2px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Reusable placeholder image icon, referenced by each grid thumbnail below via <use> -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <symbol id="icon-placeholder-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- ============ HEADER: appears once, shared by every page ============ -->
+  <header class="top-nav">
+    <div class="brand">Sean Colby | VFX Artist</div>
+
+    <nav class="main-links">
+      <a href="#compositing">compositing</a>
+      <a href="#visualization">visualization</a>
+      <a href="#motion-graphics">motion graphics</a>
+      <a href="#contact">contact</a>
+    </nav>
+
+    <div class="social-icons">
+      <!-- LinkedIn -->
+      <a href="https://www.linkedin.com/in/seancolby/" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <img src="images/icons/linkedin_logo_icon3.png" alt="LinkedIn" style="width:27.5px; height:27.5px; display:block;">
+      </a>
+      <!-- IMDb -->
+      <a href="https://www.imdb.com/name/nm7388028/" target="_blank" rel="noopener" aria-label="IMDb">
+        <img src="images/icons/IMDb_logo_icon3.png" alt="IMDb" style="height:48px; display:block;">
+      </a>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       PAGE CONTENT
+       Only one .page block is visible at a time. Clicking a nav link
+       toggles which one has the "active" class -- see the script at
+       the bottom. No reload, no separate HTML files, nothing to keep
+       in sync manually.
+       ============================================================ -->
+
+  <!-- ---------- PAGE: Compositing ---------- -->
+  <div id="compositing" class="page active">
+    <section class="reel">
+      <h1>Digital Compositing Reel</h1>
+      <div class="video-wrapper">
+        <iframe src="https://player.vimeo.com/video/813343778"
+          style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+          allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
+          title="Digital Compositing Reel"></iframe>
+      </div>
+    </section>
+
+    <section class="work">
+      <h2>Past Compositing Work</h2>
+      <div class="work-grid">
+        <div class="thumb"><img src="images/comp thumbs/01_stdi.png" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/02_twd.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/04_firecountry.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/15_beef.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/03_euphoria.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/05_loudestvoice.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/14_walker.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/12_thisisus.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/13_jexi.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/11_fob.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/08_blackish.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/07_mixedish.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/09_superstore.png" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/06_goliath.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/10_stumptown.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/19_rookiefeds.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/18_tswift_calmdown.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/comp thumbs/17_tswift_theman.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ---------- PAGE: Visualization ---------- -->
+  <div id="visualization" class="page">
+
+    <!-- Section 1: Previs/Postvis reel video -->
+    <section class="reel">
+      <h1>Previs/Postvis Reel</h1>
+      <div class="video-wrapper">
+        <iframe src="https://player.vimeo.com/video/800642303"
+          style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+          allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
+          title="Previs/Postvis Reel"></iframe>
+      </div>
+    </section>
+
+    <!-- Section 2: static, non-interactive grid -->
+    <section class="work">
+      <h2>Past Previs/Postvis Work</h2>
+      <div class="work-grid">
+        <div class="thumb"><img src="images/vis thumbs/01_guardians3.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/vis thumbs/02_quantumania.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/vis thumbs/03_moonknight.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/vis thumbs/04_msmarvel.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/vis thumbs/05_sge.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/vis thumbs/06_rednotice.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      </div>
+    </section>
+
+    <!-- Section 3: Lunar Lion video + description -->
+    <section class="reel">
+      <h1>Lunar Lion Scientific Visualization</h1>
+      <div class="video-wrapper">
+        <iframe src="https://player.vimeo.com/video/850378195"
+          style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+          allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
+          title="Lunar Lion Scientific Visualization"></iframe>
+      </div>
+      <p class="section-description">In 2014, I volunteered scientific visualization work for Penn State University's Lunar Lion Team to aid their education/outreach efforts during the Google Lunar XPrize Competition. I rebuilt a production-ready model of the lander from the team's CAD files, textured, lit, rendered, and animated the above sequence in close collaboration with the team lead while referencing the team's construction and mission specs.</p>
+    </section>
+
+    <!-- Section 4: interactive archviz grid (3x2, 6 images) + description -->
+    <section class="work">
+      <h2>Past Archviz Work</h2>
+      <div class="interactive-grid">
+        <div class="thumb-interactive" data-group="archviz" data-index="0" data-full-src="images/archviz renders/CriderExchange_1.jpg"><img src="images/archviz renders/CriderExchange_1.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb-interactive" data-group="archviz" data-index="0" data-full-src="images/archviz renders/CriderExchange_2.jpg"><img src="images/archviz renders/CriderExchange_2.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb-interactive" data-group="archviz" data-index="0" data-full-src="images/archviz renders/CriderExchange_3.jpg"><img src="images/archviz renders/CriderExchange_3.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb-interactive" data-group="archviz" data-index="0" data-full-src="images/archviz renders/CriderExchange_4.jpg"><img src="images/archviz renders/CriderExchange_4.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb-interactive" data-group="archviz" data-index="0" data-full-src="images/archviz renders/CriderExchange_5.jpg"><img src="images/archviz renders/CriderExchange_5.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb-interactive" data-group="archviz" data-index="0" data-full-src="images/archviz renders/CriderExchange_6.jpg"><img src="images/archviz renders/CriderExchange_6.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      </div>
+      <p class="section-description">I was commissioned by an entrepreneur looking to restore this property to create arch viz renderings of the building with a cleaned-up facade and modernized storefronts on the ground-level.</p>
+    </section>
+
+    <!-- Section 5: interactive interior grid (single row, 3 images) + description -->
+    <section class="work">
+      <div class="interactive-grid">
+        <div class="thumb-interactive" data-group="interior" data-index="0" data-full-src="images/archviz renders/apartment_interior_001.jpg"><img src="images/archviz renders/apartment_interior_001.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb-interactive" data-group="interior" data-index="0" data-full-src="images/archviz renders/apartment_interior_002.jpg"><img src="images/archviz renders/apartment_interior_002.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb-interactive" data-group="interior" data-index="0" data-full-src="images/archviz renders/apartment_interior_003.jpg"><img src="images/archviz renders/apartment_interior_003.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      </div>
+      <p class="section-description">An interior space I was commissioned to recreate in 3D in order to visualize potential interior designs.</p>
+    </section>
+
+  </div>
+
+  <!-- ---------- PAGE: Motion Graphics ---------- -->
+  <div id="motion-graphics" class="page">
+
+    <!-- Section 1: GFX reel -->
+    <section class="reel">
+      <h1>Motion Graphics Reel</h1>
+      <div class="video-wrapper">
+        <iframe src="https://player.vimeo.com/video/453814246"
+          style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+          allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
+          title="Motion Graphics Reel"></iframe>
+      </div>
+    </section>
+
+    <!-- Section 2: Previous work static image grid -->
+    <section class="work">
+      <h2>Past Motion Graphics Work</h2>
+      <div class="work-grid">
+        <div class="thumb"><img src="images/gfx thumbs/04_brooklyn_99.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/gfx thumbs/05_grownish.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/gfx thumbs/04_mfam.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/gfx thumbs/03_fob.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/gfx thumbs/01_blackish.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/gfx thumbs/02_superstore.png" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/gfx thumbs/psu_lunar_lion.png" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/gfx thumbs/LLP.png" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/gfx thumbs/KarambaLogo.png" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="thumb"><img src="images/gfx thumbs/nli.png" style="width:100%; height:100%; object-fit:cover;"></div>
+      </div>
+    </section>
+
+    <!-- Section 3: Karamba Security ad + description -->
+    <section class="reel">
+      <h1>Karamba Security Ad</h1>
+      <div class="video-wrapper">
+        <iframe src="https://player.vimeo.com/video/251860934"
+          style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+          allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
+          title="Karamba Security Ad"></iframe>
+      </div>
+      <p class="section-description">For this Karamba Security ad, I was asked to design and iterate concepts for a fictitious computer operating system. Once a design was approved, I created a functional template that could be modified for individual monitors on-set. I designed and animated every screen element in the ad. Most of the screens were shot practically, but a small number needed to be composited in post-production. After principal production, I was tasked with a handful of roto-paint shots and screen comps.</p>
+    </section>
+  </div>
+
+  <!-- ---------- PAGE: Contact ---------- -->
+  <div id="contact" class="page">
+    <section class="contact-section">
+      <h1>Contact Information</h1>
+      <p>For business inquiries, please contact me via email at:</p>
+      <a href="mailto:scolby.video@gmail.com" class="contact-email">scolby.video@gmail.com</a>
+    </section>
+  </div>
+
+  <!-- ============ FOOTER: appears once, shared by every page ============ -->
+  <footer class="site-footer">
+    © <span id="copyright-year">2026</span> Sean Colby
+  </footer>
+
+  <!-- ============ LIGHTBOX: shared fullscreen image viewer, used by any
+       .thumb-interactive grid on any page ============ -->
+  <div id="lightbox" class="lightbox-overlay" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="6" y1="6" x2="18" y2="18"/>
+        <line x1="18" y1="6" x2="6" y2="18"/>
+      </svg>
+    </button>
+    <button class="lightbox-arrow lightbox-prev" aria-label="Previous image">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 6 9 12 15 18"/>
+      </svg>
+    </button>
+    <div class="lightbox-content"></div>
+    <button class="lightbox-arrow lightbox-next" aria-label="Next image">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 6 15 12 9 18"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ============ PAGE SWITCHING LOGIC ============ -->
+  <script>
+    (function () {
+      var navLinks = document.querySelectorAll('nav.main-links a');
+      var pages = document.querySelectorAll('.page');
+
+      function showPage(pageId, pushHistory) {
+        var exists = document.getElementById(pageId) !== null;
+        if (!exists) pageId = 'compositing';
+
+        pages.forEach(function (p) {
+          p.classList.toggle('active', p.id === pageId);
+        });
+        navLinks.forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + pageId);
+        });
+
+        if (pushHistory) {
+          history.pushState(null, '', '#' + pageId);
+        }
+        window.scrollTo(0, 0);
+
+        // Close the lightbox if it's open when navigating to a different page
+        var lightboxEl = document.getElementById('lightbox');
+        if (lightboxEl) {
+          lightboxEl.classList.remove('open');
+          lightboxEl.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
+
+      navLinks.forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          showPage(a.getAttribute('href').slice(1), true);
+        });
+      });
+
+      window.addEventListener('popstate', function () {
+        showPage(location.hash.slice(1) || 'compositing', false);
+      });
+
+      // Load whichever page matches the URL hash on first load (defaults to compositing)
+      showPage(location.hash.slice(1) || 'compositing', false);
+
+      // Keep the footer copyright year current, based on the visitor's own device clock
+      var yearEl = document.getElementById('copyright-year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+    })();
+  </script>
+
+  <!-- ============ LIGHTBOX LOGIC ============ -->
+  <script>
+    (function () {
+      var lightbox = document.getElementById('lightbox');
+      var content = lightbox.querySelector('.lightbox-content');
+      var closeBtn = lightbox.querySelector('.lightbox-close');
+      var prevBtn = lightbox.querySelector('.lightbox-prev');
+      var nextBtn = lightbox.querySelector('.lightbox-next');
+
+      var currentGroup = null;
+      var currentIndex = 0;
+
+      // Groups are defined purely by shared data-group values in the HTML --
+      // add a new gallery anywhere by giving its thumbs a data-group name
+      // and sequential data-index values; no JS changes needed.
+      function getGroupItems(groupName) {
+        return Array.prototype.slice.call(
+          document.querySelectorAll('.thumb-interactive[data-group="' + groupName + '"]')
+        );
+      }
+
+      function render() {
+        var items = getGroupItems(currentGroup);
+        var item = items[currentIndex];
+        var fullSrc = item ? item.getAttribute('data-full-src') : '';
+
+        if (fullSrc) {
+          content.innerHTML = '<img src="' + fullSrc + '" alt="">';
+        } else {
+          content.innerHTML = '<div class="lightbox-placeholder-label">Full Sized<br>Placeholder Image</div>';
+        }
+
+        prevBtn.hidden = currentIndex === 0;
+        nextBtn.hidden = currentIndex === items.length - 1;
+      }
+
+      function open(groupName, index) {
+        currentGroup = groupName;
+        currentIndex = index;
+        render();
+        lightbox.classList.add('open');
+        lightbox.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function close() {
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      function showPrev() {
+        if (currentIndex > 0) {
+          currentIndex -= 1;
+          render();
+        }
+      }
+
+      function showNext() {
+        var items = getGroupItems(currentGroup);
+        if (currentIndex < items.length - 1) {
+          currentIndex += 1;
+          render();
+        }
+      }
+
+      document.querySelectorAll('.thumb-interactive').forEach(function (thumb) {
+        thumb.addEventListener('click', function () {
+          open(thumb.getAttribute('data-group'), parseInt(thumb.getAttribute('data-index'), 10));
+        });
+      });
+
+      closeBtn.addEventListener('click', close);
+      prevBtn.addEventListener('click', showPrev);
+      nextBtn.addEventListener('click', showNext);
+
+      // Click on the dark backdrop (outside the image itself) also closes it
+      lightbox.addEventListener('click', function (e) {
+        if (e.target === lightbox) close();
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (!lightbox.classList.contains('open')) return;
+        if (e.key === 'Escape') close();
+        if (e.key === 'ArrowLeft') showPrev();
+        if (e.key === 'ArrowRight') showNext();
+      });
+    })();
+  </script>
+
+</body>
+</html>
