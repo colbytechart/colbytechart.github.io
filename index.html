@@ -207,7 +207,6 @@
   .work-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--gap);
   }
 
   .work-grid .thumb {
@@ -239,7 +238,6 @@
   .interactive-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--gap);
   }
 
   .thumb-interactive {
@@ -401,7 +399,8 @@
   /* ============ CONTACT SECTION ============ */
 
   section.contact-section {
-    max-width: 560px;
+    /*max-width: 560px;*/
+    width: min(100%, 560px);
     margin: 140px auto;
     padding: 0 24px;
     text-align: center;
@@ -423,13 +422,17 @@
   }
 
   .contact-email {
-    display: inline-block;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--accent);
-    /*border-bottom: 1px solid var(--accent-dim);*/
-    padding-bottom: 3px;
-    transition: border-color 0.15s ease;
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+
+    text-align: center;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    font-size: clamp(14px, 4.5vw, 18px);
+    line-height: 1.5;
   }
 
   .contact-email:hover {
@@ -446,6 +449,249 @@
     color: var(--accent);
     letter-spacing: 0.2px;
   }
+
+/* Allow body flex children and grids to shrink */
+.page {
+  width: 100%;
+  min-width: 0;
+}
+
+section.reel,
+section.work {
+  width: min(100%, var(--content-width));
+}
+
+.work-grid,
+.interactive-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.work-grid .thumb,
+.thumb-interactive {
+  min-width: 0;
+}
+
+.work-grid img,
+.interactive-grid img {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* BREAK POINTS */
+
+@media (min-width: 641px) and (max-width: 1050px) {
+  header.top-nav {
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 24px clamp(12px, 3vw, 40px);
+    column-gap: clamp(8px, 1.5vw, 20px);
+  }
+
+  .brand {
+    flex: 0 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+    font-size: clamp(15px, 2.4vw, 25px);
+  }
+
+  nav.main-links {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: clamp(5px, 1.5vw, 18px);
+  }
+
+  nav.main-links a {
+    white-space: nowrap;
+    font-size: clamp(10px, 1.4vw, 15px);
+  }
+
+  .social-icons {
+    flex: 0 0 auto;
+  }
+}
+
+@media (min-width: 641px) {
+  header.top-nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-areas: "brand links social";
+    align-items: center;
+  }
+
+  .brand {
+    grid-area: brand;
+    justify-self: start;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  nav.main-links {
+    grid-area: links;
+    justify-self: center;
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  nav.main-links a {
+    white-space: nowrap;
+  }
+
+  .social-icons {
+    grid-area: social;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 640px) {
+  header.top-nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "brand social"
+      "links links";
+    align-items: center;
+    padding: 18px 16px;
+    gap: 14px 12px;
+  }
+
+  .brand {
+    grid-area: brand;
+    justify-self: start;
+    min-width: 0;
+    white-space: normal;
+    font-size: clamp(16px, 5vw, 21px);
+  }
+
+  .social-icons {
+    grid-area: social;
+    justify-self: end;
+  }
+
+  nav.main-links {
+    grid-area: links;
+    justify-self: stretch;
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: clamp(6px, 2vw, 14px);
+  }
+
+  nav.main-links a {
+    flex: 0 1 auto;
+    white-space: nowrap;
+    font-size: clamp(10px, 2.8vw, 13px);
+  }
+  
+  .lightbox-overlay {
+    padding: 64px 12px 16px;
+  }
+
+  .lightbox-close {
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .lightbox-overlay.open {
+    display: grid;
+    grid-template-columns: 1fr 44px 44px 1fr;
+    grid-template-rows: auto 44px;
+
+    column-gap: 10px;
+    row-gap: var(--gap);
+
+    align-content: center;
+    justify-content: center;
+
+    padding: 60px 12px 12px;
+  }
+
+  .lightbox-content {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: center;
+
+    width: fit-content;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100dvh - 116px - var(--gap));
+  }
+
+  .lightbox-content img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100dvh - 116px - var(--gap));
+    object-fit: contain;
+  }
+
+  .lightbox-arrow {
+    position: static;
+    transform: none;
+    align-self: start;
+
+    width: 44px;
+    height: 44px;
+  }
+
+  .lightbox-prev {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .lightbox-next {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .lightbox-close {
+    top: 10px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 420px) {
+  .work-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1200px) {
+  header.top-nav {
+    /* Space between title, navigation, and social columns */
+    column-gap: clamp(6px, 1.2vw, 14px);
+
+    /* Preserve more usable horizontal room */
+    padding-inline: clamp(12px, 2vw, 28px);
+  }
+
+  .brand {
+    max-width: 100%;
+    font-size: clamp(14px, 1.9vw, 23px);
+    white-space: nowrap;
+  }
+
+  nav.main-links {
+    gap: clamp(5px, 1.1vw, 14px);
+  }
+
+  nav.main-links a {
+    font-size: clamp(10px, 1.15vw, 14px);
+  }
+}
+
 </style>
 </head>
 <body>
